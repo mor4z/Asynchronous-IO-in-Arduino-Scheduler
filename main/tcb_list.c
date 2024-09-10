@@ -43,11 +43,11 @@ uint8_t TCBList_enqueue(TCBList* list, TCB* tcb){
 
 void TCBList_print(TCBList* list){
   TCB* aux=list->first;
-  printf("start-list\n");
+  printf("+++++++++++++++start-list+++++++++++++++\n");
   while(aux!=NULL){
-    printf("[c: %p, p: %p, n: %p]\n ",
+    printf(" [c: %p, p: %p, n: %p]\n",
            aux, aux->prev, aux->next);
     aux=aux->next;
   }
-  printf("end-list\n");
+  printf("---------------end-list---------------\n");
 }

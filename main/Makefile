@@ -27,11 +27,11 @@ OBJS=atomport_asm.o\
 	 uart.o\
 
 HEADERS=atomport_asm.h\
-	 scheduler.h\
-	 tcb.h\
-     tcb_list.h\
-     timer.h\
-	 uart.h\
+	    scheduler.h\
+	    tcb.h\
+        tcb_list.h\
+        timer.h\
+	    uart.h\
 
 BINS= main.elf tcb_queue_test.elf
 

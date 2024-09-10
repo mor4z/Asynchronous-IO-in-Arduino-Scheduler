@@ -9,4 +9,6 @@ Writer: ./serial/serial_linux /dev/ttyACM0 19200 0
 The program serial_linux sends from the input stream of the Writer the written text to the Reader, that reproduces it on his output stream.
 To make the program work I need to charge on the Arduino the program uart.c that manages the serial so that it works for the communication.
 
+In my project I will use serial_linux just to create the echo server for the communication, on the Arduino I will then charge the program that handles the scheduler. 
+
 The program uart.c is located in the directory ../main/

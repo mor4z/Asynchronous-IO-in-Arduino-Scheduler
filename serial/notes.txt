@@ -1,0 +1,12 @@
+The serial of the Arduino is the device called ttyACM0, in the Virtual File System is located in /dev/ttyACM0.
+
+To use the serial of the Arduino to communicate between a reader and a writer, I need to execute two times the program serial_linux, once for the reader,
+the other for the writer.
+
+Reader: ./serial/serial_linux /dev/ttyACM0 19200 1
+Writer: ./serial/serial_linux /dev/ttyACM0 19200 0
+
+The program serial_linux sends from the input stream of the Writer the written text to the Reader, that reproduces it on his output stream.
+To make the program work I need to charge on the Arduino the program uart.c that manages the serial so that it works for the communication.
+
+The program uart.c is located in the directory ../main/

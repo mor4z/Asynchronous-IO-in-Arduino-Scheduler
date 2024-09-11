@@ -20,9 +20,11 @@ Implement two functions:
 
 ## Directory 
 In the directory main there are all the files I need to handle the task switch and all the structures used for the tasks. The subdirectory my_functions contains the functions that handle the input and output buffer and the two functions I have to implement.
+
 In the directory serial there are all the files I need to use the serial of the Arduino to communicate between a reading process and a writing process.
 
 
 ## Working flow
 Day 1 - 9/09/2024: I selected all useful files from the course repository and created the GitHub repository.
+
 Day 2 - 10/09/2024: I started working on the input and output buffers, implementing all the functions to create and handle these buffers.

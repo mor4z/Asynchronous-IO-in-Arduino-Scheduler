@@ -1,9 +1,7 @@
 #include "buf.h"
 #include <stdio.h>
 
-// Global variables
-Buffer inputBuffer;
-Buffer outputBuffer;
+
 
 // Function that initializes the fields of the buffer
 void bufferInit(Buffer* buffer) {

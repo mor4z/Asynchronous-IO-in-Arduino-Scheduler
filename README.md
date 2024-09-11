@@ -28,3 +28,5 @@ In the directory serial there are all the files I need to use the serial of the 
 Day 1 - 9/09/2024: I selected all useful files from the course repository and created the GitHub repository.
 
 Day 2 - 10/09/2024: I started working on the input and output buffers, implementing all the functions to create and handle these buffers.
+
+Day 3 - 11/09/2024: I started writing a prototype for the functions getChar() and putChar() and tested them with the functions for the buffer that I wrote on day 2.

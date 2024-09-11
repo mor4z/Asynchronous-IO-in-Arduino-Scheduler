@@ -47,7 +47,6 @@ int main() {
     // Trying to read again from the input buffer, but I expect an error because it's empty
     ch = bufferRead(&inputBuffer);
     printf("Letto: %c\n", ch);
-    putChar(ch);
 
     // Printing the output buffer
     printBuffer(&outputBuffer);

@@ -1,0 +1,11 @@
+The function getChar() checks if the size of the inputBuffer is not 0, 
+otherwise any character can be read from the buffer. If the size is greater
+than 0 the function reads the first character calling the function 
+bufferRead() and returns the value read. Otherwise the task is enqueued in
+the waiting queue for the reading tasks.
+
+The function putChar() checks if the size of the outputBuffer is not 
+BUFFER_SIZE, so checks if the outputBuffer is not full. If the buffer is    
+not full, the function writes the value passed as argument in the outputBuffer
+calling the function bufferWrite. Otherwise the task is enqueued in
+the waiting queue for the writing tasks.

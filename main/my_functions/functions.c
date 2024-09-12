@@ -2,6 +2,11 @@
 
 #include "buf.h"
 #include "functions.h"
+#include "../scheduler.h"
+#include "../tcb.h"
+#include "../tcb_list.h"
+#include "../atomport_asm.h"
+#include "../uart.h"
 
 char getChar(void) {
     char ret;

@@ -16,6 +16,19 @@ TCBList running_queue={
   .size=0
 };
 
+// the waiting queues
+TCBList input_waiting_queue = {       // reading
+  .first=NULL,
+  .last=NULL,
+  .size=0
+};
+
+TCBList output_waiting_queue = {      // writing
+  .first=NULL,
+  .last=NULL,
+  .size=0
+};
+
 
 // Function that starts the scheduler the first time
 void startSchedule(void){

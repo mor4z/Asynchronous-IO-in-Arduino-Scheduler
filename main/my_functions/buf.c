@@ -1,8 +1,6 @@
 #include "buf.h"
 #include <stdio.h>
 
-
-
 // Function that initializes the fields of the buffer
 void bufferInit(Buffer* buffer) {
     buffer -> head = 0;
@@ -25,6 +23,7 @@ void bufferWrite(Buffer* buffer, char data) {
 char bufferRead(Buffer* buffer) {
     if (buffer -> size > 0) {
         char ret = buffer -> data[buffer -> tail];
+        buffer -> data[buffer -> tail] = 0;
         buffer -> tail = (buffer -> tail + 1) % BUFFER_SIZE;
         buffer -> size--;
         return ret;

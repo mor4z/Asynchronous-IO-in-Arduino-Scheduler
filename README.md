@@ -30,3 +30,5 @@ Day 1 - 9/09/2024: I selected all useful files from the course repository and cr
 Day 2 - 10/09/2024: I started working on the input and output buffers, implementing all the functions to create and handle these buffers.
 
 Day 3 - 11/09/2024: I started writing a prototype for the functions getChar() and putChar() and tested them with the functions for the buffer that I wrote on day 2.
+
+Day 4 - 12/09/2024: I started creating the TCBList elements for the waiting queues, one for the input buffer and one for the output buffer. Then I started writing the thread functions for the tasks: the task 'main' is responsible for printing on the screen the next value of the output buffer; the tasks 'p1' and 'p2' are responsible for receiving the character and putting in first in the input buffer, then moving it to the output buffer.

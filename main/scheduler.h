@@ -16,4 +16,3 @@ void startSchedule(void);
 
 // used in the ISR of the timer
 void schedule(void);
-     

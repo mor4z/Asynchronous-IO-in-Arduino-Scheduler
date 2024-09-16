@@ -35,10 +35,12 @@ char bufferRead(Buffer* buffer) {
 
 // Function that prints the buffer
 void printBuffer(Buffer* buffer) {
+    printf("##################################################\n");
     printf("[");
     for (int i = 0; i < buffer -> size; ++i){
         int index = (buffer -> tail + i) % BUFFER_SIZE;
         printf("%c ", buffer -> data[index]);
     }
     printf("]\n");
+    printf("##################################################\n");
 }

@@ -28,31 +28,46 @@ uint8_t idle_stack[IDLE_STACK_SIZE];
 void idle_fn(uint32_t thread_arg __attribute__((unused))){
   while(1) {
     cli();
-    printf("i\n");
+    printf("[idle] Waiting to receive a character\n");
+    
+    // Adding the character to the reading buffer
+    char x = usart_getchar();
+    // bufferWrite(&reading_buffer, x);
+
+    // Getting the character form the reading buffer and putting it in the writing buffer
+    x = getChar();
+    // putChar(x);
+    
     sei();
-    _delay_ms(10);
+    _delay_ms(1000);
   }
 }
 
-TCB p1_tcb;
-uint8_t p1_stack[THREAD_STACK_SIZE];
-void p1_fn(uint32_t arg __attribute__((unused))){
+TCB r1_tcb;
+uint8_t r1_stack[THREAD_STACK_SIZE];
+void r1_fn(uint32_t arg __attribute__((unused))){
   while(1){
     cli();
-    printf("p1\n");
+    printf("[r1] Printing reading_buffer\n");
+
+    printBuffer(&reading_buffer);
+    
     sei();
-    _delay_ms(10);
+    _delay_ms(1000);
   }
 }
 
-TCB p2_tcb;
-uint8_t p2_stack[THREAD_STACK_SIZE];
-void p2_fn(uint32_t arg __attribute__((unused))){
+TCB w2_tcb;
+uint8_t w2_stack[THREAD_STACK_SIZE];
+void w2_fn(uint32_t arg __attribute__((unused))){
   while(1){
     cli();
-    printf("p2\n");
+    printf("[w2] Printing writing_buffer\n");
+
+    printBuffer(&writing_buffer);
+
     sei();
-    _delay_ms(10);
+    _delay_ms(1000);
   }
 }
 
@@ -61,25 +76,30 @@ void p2_fn(uint32_t arg __attribute__((unused))){
 int main(void){
   // we need printf for debugging
   printf_init();
+  enableRxInterrupt();
 
+  // Initializing buffers
+  bufferInit(&reading_buffer);
+  bufferInit(&writing_buffer);
+  
   TCB_create(&idle_tcb,
              idle_stack+IDLE_STACK_SIZE-1,
              idle_fn,
              0);
 
-  TCB_create(&p1_tcb,
-             p1_stack+THREAD_STACK_SIZE-1,
-             p1_fn,
+  TCB_create(&r1_tcb,
+             r1_stack+THREAD_STACK_SIZE-1,
+             r1_fn,
              0);
 
-  TCB_create(&p2_tcb,
-             p2_stack+THREAD_STACK_SIZE-1,
-             p2_fn,
+  TCB_create(&w2_tcb,
+             w2_stack+THREAD_STACK_SIZE-1,
+             w2_fn,
              0);
 
   
-  TCBList_enqueue(&running_queue, &p1_tcb);
-  TCBList_enqueue(&running_queue, &p2_tcb);
+  TCBList_enqueue(&running_queue, &r1_tcb);
+  TCBList_enqueue(&running_queue, &w2_tcb);
   TCBList_enqueue(&running_queue, &idle_tcb);
 
   printf("starting\n");

@@ -37,3 +37,22 @@ void schedule(void) {
   if (old_tcb!=current_tcb)
     archContextSwitch(old_tcb, current_tcb);
 }
+
+
+ISR(USART0_RX_vect){
+  cli();
+
+  // reading the caracter
+  char c = UDR0;
+
+  // changing the '\r' or '\n'  with the string terminator
+  if(c == '\r' || c == '\n') {
+    c = '\0';
+  }
+
+  // saving the character in the reading buffer
+  bufferWrite(&reading_buffer, c);
+  sei();
+
+  // schedule();
+}

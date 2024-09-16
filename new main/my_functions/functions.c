@@ -17,7 +17,6 @@ void enableRxInterrupt(){
 }
 
 char getChar(void) {
-
     if (reading_buffer.size == 0) {
         // Enqueuing the task in waiting queue
         printf("Enqueuing the task in waiting queue\n");

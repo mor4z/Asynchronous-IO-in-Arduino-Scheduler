@@ -1,5 +1,6 @@
 #include "buf.h"
 #include <stdio.h>
+#include <util/atomic.h>
 
 // Function that initializes the fields of the buffer
 void bufferInit(Buffer* buffer) {
@@ -10,31 +11,28 @@ void bufferInit(Buffer* buffer) {
 
 // Function that writes on the buffer
 void bufferWrite(Buffer* buffer, char data) {
-    if (buffer -> size < BUFFER_SIZE) {
+    ATOMIC_BLOCK(ATOMIC_FORCEON){
         buffer -> data[buffer -> head] = data;
         buffer -> head = (buffer -> head + 1) % BUFFER_SIZE;
         buffer -> size++;
-    } else {
-        printf("Buffer pieno\n");
     }
 }
 
 // Function that reads from the buffer
 char bufferRead(Buffer* buffer) {
-    if (buffer -> size > 0) {
-        char ret = buffer -> data[buffer -> tail];
+    char ret;
+    ATOMIC_BLOCK(ATOMIC_FORCEON) {
+        ret = buffer -> data[buffer -> tail];
         buffer -> data[buffer -> tail] = 0;
         buffer -> tail = (buffer -> tail + 1) % BUFFER_SIZE;
         buffer -> size--;
-        return ret;
     }
-    
-    printf("Buffer vuoto\n");
-    return -1;
+    return ret;
 }
 
 // Function that prints the buffer
 void printBuffer(Buffer* buffer) {
+    
     printf("##################################################\n");
     printf("[");
     for (int i = 0; i < buffer -> size; ++i){
@@ -43,4 +41,5 @@ void printBuffer(Buffer* buffer) {
     }
     printf("]\n");
     printf("##################################################\n");
+    
 }

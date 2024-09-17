@@ -20,7 +20,7 @@ void bufferWrite(Buffer* buffer, char data) {
 
 // Function that reads from the buffer
 char bufferRead(Buffer* buffer) {
-    char ret;
+    uint8_t ret;
     ATOMIC_BLOCK(ATOMIC_FORCEON) {
         ret = buffer -> data[buffer -> tail];
         buffer -> data[buffer -> tail] = 0;

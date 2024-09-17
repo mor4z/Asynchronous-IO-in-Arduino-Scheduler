@@ -40,6 +40,7 @@ void schedule(void) {
 
 
 ISR(USART0_RX_vect){
+  cli();
   // reading the caracter
   char c = UDR0;
 
@@ -51,5 +52,8 @@ ISR(USART0_RX_vect){
   // saving the character in the reading buffer
   bufferWrite(&reading_buffer, c);
 
+  // TODO function that awakes reading task
+
+  sei();
   schedule();
 }

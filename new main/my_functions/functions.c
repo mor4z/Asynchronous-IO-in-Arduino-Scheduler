@@ -11,7 +11,7 @@
 #include "../atomport_asm.h"
 #include "../uart.h"
 
-// funzione per attivare interrupt in ricezione
+// Activating RX interrupt
 void enableRxInterrupt(){   
     UCSR0B |= (1<<RXCIE0);
 }
@@ -19,26 +19,28 @@ void enableRxInterrupt(){
 char getChar(void) {
     if (reading_buffer.size == 0) {
         // Enqueuing the task in waiting queue
-        printf("Enqueuing the task in waiting queue\n");
-        return -1;
+        printf("[getChar]Enqueuing the task in waiting queue\n");
+        
+        schedule();
     }
 
     // Return the char
     char ret = bufferRead(&reading_buffer);
-    if (ret != -1) {
-        printf("Value %c read from the reading_buffer\n", ret);
-    }
+    // if (ret != -1) {
+    //     printf("Value %c read from the reading_buffer\n", ret);
+    // }
     return ret;
 }
 
 void putChar(char data) {
     if (writing_buffer.size == BUFFER_SIZE) {
         // Enqueuing the task in waiting queue
-        printf("Enqueuing the task in waiting queue\n");
-        return;
+        printf("[putChar]Enqueuing the task in waiting queue\n");
+        
+        schedule();
     }
 
     // writing the char on the output buffer
     bufferWrite(&writing_buffer, data);
-    printf("Value %c written in the writing_buffer \n", data);
+    // printf("Value %c written in the writing_buffer \n", data);
 }

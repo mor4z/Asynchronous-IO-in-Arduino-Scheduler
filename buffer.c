@@ -1,5 +1,8 @@
 #include "buffer.h"
 
+#include <avr/interrupt.h>
+#include <avr/io.h>
+
 void bufferInit(RingBuffer* buffer) {
     if (buffer == NULL) {
         printf("[bufferInit -> Errore] buffer == NULL\n");
@@ -8,10 +11,10 @@ void bufferInit(RingBuffer* buffer) {
 
     buffer -> head = 0;
     buffer -> tail = 0;
-    buffer -> size = BUFFER_SIZE;
+    buffer -> size = 0;
 
     // Metto a 0 tutti i caratteri del buffer
-    for (int i = 0; i < buffer -> size; i++) {
+    for (int i = 0; i < BUFFER_SIZE; i++) {
         buffer -> data[i] = 0;
     } 
     
@@ -27,7 +30,7 @@ void bufferInfo(RingBuffer* buffer) {
 
     // Stampa del contenuto di data
     printf("[buffer -> data]");
-    for (int k = 0; k < buffer -> size; k++)
+    for (int k = 0; k < BUFFER_SIZE; k++)
         printf("%c", buffer -> data[k]);
     printf("\n");
 
@@ -36,13 +39,14 @@ void bufferInfo(RingBuffer* buffer) {
 }
 
 void bufferWrite(RingBuffer* buffer, char c) {
-    if ((buffer -> head + 1) % (buffer -> size) == (buffer -> tail)) {
+    if ((buffer -> head + 1) % BUFFER_SIZE == (buffer -> tail)) {
         printf("[bufferWrite] Buffer pieno, impossibile scrivere\n");
         return;
     }
 
     buffer -> data[buffer -> head] = c;
-    buffer -> head = (buffer -> head + 1) % (buffer -> size);
+    buffer -> head = (buffer -> head + 1) % (BUFFER_SIZE);
+    buffer -> size++;
     // printf("[bufferWrite] Scrittura su buffer completata con successo\n");
 }
 
@@ -54,8 +58,15 @@ char bufferRead(RingBuffer* buffer) {
 
     char c = buffer -> data[buffer -> tail];
     buffer -> data[buffer -> tail] = 0;
-    buffer -> tail = (buffer -> tail + 1) % (buffer -> size);
+    buffer -> tail = (buffer -> tail + 1) % BUFFER_SIZE;
+    buffer -> size--;
     // printf("[bufferRead] Lettura da buffer completata con successo\n");
     return c;
 } 
+
+
+// funzione per attivare interrupt in ricezione
+void enableRxInterrupt(void){   
+    UCSR0B |= (1<<RXCIE0);
+}
 

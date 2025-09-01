@@ -15,3 +15,9 @@ void bufferInit(RingBuffer* buffer);                // Inizializzazione del buff
 void bufferInfo(RingBuffer* buffer);                // Stampa i campi del buffer (per debugging)
 void bufferWrite(RingBuffer* buffer, char c);       // Scrittura di un carattere sul buffer
 char bufferRead(RingBuffer* buffer);                // Lettura di un carattere dal buffer
+
+RingBuffer inputBuffer;
+RingBuffer outputBuffer;
+
+// funzione per attivare interrupt in ricezione
+void enableRxInterrupt(void);

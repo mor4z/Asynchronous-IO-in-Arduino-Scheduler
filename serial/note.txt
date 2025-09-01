@@ -1,0 +1,5 @@
+La porta del dispositivo seriale è ttyAMC0
+
+A partire dalla cartella del progetto
+Comando per leggere dalla seriale   ./serial/serial_linux /dev/ttyACM0 19200 1
+Comando per scrivere sulla seriale  ./serial/serial_linux /dev/ttyACM0 19200 0

@@ -11,8 +11,10 @@ TCB* TCBList_dequeue(TCBList* list){
     list->first = list->last = NULL;
   } else {
     TCB* next=tcb->next;
-    list->first=next;
-    next->prev=next;
+    // list->first=next;
+    // next->prev=next;
+    next -> prev = list -> first;
+    list -> first = next;
   }
   --list->size;
   tcb->next=NULL;

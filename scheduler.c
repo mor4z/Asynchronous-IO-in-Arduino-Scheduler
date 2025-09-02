@@ -8,6 +8,8 @@
 
 #include "buffer.h"
 
+extern uint8_t interrupt_occured;
+
 // the (detached) running process
 TCB* current_tcb=NULL;
 
@@ -17,20 +19,6 @@ TCBList running_queue={
   .last=NULL,
   .size=0
 };
-
-// ISR per la ricezione da seriale
-ISR(USART0_RX_vect) {
-  cli();
-
-  // Scrittura del carattere ricevuto nel buffer
-  char c = UDR0;
-  bufferWrite(&inputBuffer, c);
-
-  // TODO: manda notifica che il buffer di input non è più vuoto
-
-  sei();
-  // schedule();
-}
 
 void startSchedule(void){
   cli();
@@ -50,4 +38,20 @@ void schedule(void) {
   // we jump to it (useless if it is the only process)
   if (old_tcb!=current_tcb)
     archContextSwitch(old_tcb, current_tcb);
+}
+
+// ISR per la ricezione da seriale
+ISR(USART0_RX_vect) {
+  cli();
+
+  uart_interrupt_occured = 1;
+
+  // Scrittura del carattere ricevuto nel buffer
+  char c = UDR0;
+  bufferWrite(&inputBuffer, c);
+
+  // TODO: manda notifica che il buffer di input non è più vuoto
+
+  sei();
+  schedule();
 }

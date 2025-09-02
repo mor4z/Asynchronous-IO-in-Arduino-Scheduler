@@ -7,7 +7,7 @@ typedef struct {
     char data[BUFFER_SIZE];
     uint8_t head;               // Indice per la scrittura (ultimo carattere inserito)
     uint8_t tail;               // Indice per la lettura (primo carattere inserito)
-    uint8_t size;               // Dimensione del buffer
+    uint8_t size;               // Spazio occupato nel buffer
 } RingBuffer;
 
 

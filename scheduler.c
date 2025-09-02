@@ -5,20 +5,34 @@
 #include "tcb_list.h"
 #include "atomport_asm.h"
 #include "timer.h"
-
 #include "buffer.h"
 
-extern uint8_t interrupt_occured;
+extern uint8_t uart_interrupt;
 
 // the (detached) running process
 TCB* current_tcb=NULL;
 
-// the running queue
+// Coda dei processi running
 TCBList running_queue={
   .first=NULL,
   .last=NULL,
   .size=0
 };
+
+// Coda dei processi in attesa di lettura
+TCBList input_queue={
+  .first=NULL,
+  .last=NULL,
+  .size=0
+};
+
+// Coda dei processi in attesa di scrittura
+TCBList output_queue={
+  .first=NULL,
+  .last=NULL,
+  .size=0
+};
+
 
 void startSchedule(void){
   cli();
@@ -43,8 +57,6 @@ void schedule(void) {
 // ISR per la ricezione da seriale
 ISR(USART0_RX_vect) {
   cli();
-
-  uart_interrupt_occured = 1;
 
   // Scrittura del carattere ricevuto nel buffer
   char c = UDR0;

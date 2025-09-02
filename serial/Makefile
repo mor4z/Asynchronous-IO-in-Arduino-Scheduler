@@ -7,8 +7,10 @@ BINS=serial_linux
 
 all: $(BINS)
 
-serial_linux: serial_linux.cpp
+
+serial_linux:	serial_linux.cpp
 	$(CXX) -$(CCOPTS) -o $@ $^  
 
 clean:
 	rm -rf *~ $(BINS) *.pgm
+

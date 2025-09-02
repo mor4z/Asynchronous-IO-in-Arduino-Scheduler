@@ -24,19 +24,22 @@ void print_fn(uint32_t thread_arg __attribute__((unused))){
     printf("print\n");
     sei();
     _delay_ms(1000);
+
+    // Processo che dovrà stampare i caratteri dall'outputBuffer
   }
 }
 
-// Altri processi
+// Altri processi: quando arriverà una interruzione dalla UART, questi dovranno scrivere sull'inputBuffer il carattere ricevuto getChar() e riportarlo sull'outputBuffer putChar(). Nel caso in cui non possano svolgere una di queste due operazioni, verranno messi nella rispettiva coda di attesa. 
 TCB p1_tcb;
 uint8_t p1_stack[THREAD_STACK_SIZE];
 void p1_fn(uint32_t arg __attribute__((unused))){
   while(1){
     cli();
-    printf("p1\n");
+    printf("p1\n"); /* TODO */
     sei();
     _delay_ms(1000);
   }
+
 }
 
 TCB p2_tcb;
@@ -44,18 +47,18 @@ uint8_t p2_stack[THREAD_STACK_SIZE];
 void p2_fn(uint32_t arg __attribute__((unused))){
   while(1){
     cli();
-    printf("p2\n");
+    printf("p2\n"); /* TODO */
     sei();
     _delay_ms(1000);
   }
 }
 
 
-
 int main(void){
   // we need printf for debugging
   printf_init();
 
+  // Attivo gli interrupt in ricezione della seriale
   enableRxInterrupt();
 
   // Inizializzazione dei buffer

@@ -1,4 +1,5 @@
 #include "buffer.h"
+#include "scheduler.h"
 
 #include <avr/interrupt.h>
 #include <avr/io.h>
@@ -64,9 +65,39 @@ char bufferRead(RingBuffer* buffer) {
     return c;
 } 
 
-
 // funzione per attivare interrupt in ricezione
 void enableRxInterrupt(void){   
     UCSR0B |= (1<<RXCIE0);
 }
 
+/* ***********Funzioni richieste dal professore ********** 
+char getChar(), that reads, if available a character from the input buffer. If the buffer is empty the "thread" asking for the character is put in a waiting queue. When a character becomes available the thread is brought back in running, and the character is returned (and consumed from the buffer)
+
+void putChar(char), that writes (if there is enough space) a character on the output buffer. If the buffer is full, the thread is put in waiting, and resumed whenever there is enough room in the buffer.
+*/
+
+char getChar(void) {
+    // Se il buffer di lettura è vuoto, metto il thread corrente nella coda di attesa di lettura
+    if (inputBuffer.size == 0) {
+        TCBList_enqueue(&reading_queue, current_tcb);
+        current_tcb -> status = Waiting;
+        schedule();
+    }
+
+    // Se c'è qualcosa nel buffer di lettura, leggo e ritorno il carattere nel buffer
+    char c = bufferRead(&inputBuffer);
+    return c;
+}
+
+void putChar(char c) {
+    // Se il buffer di scrittura è pieno, metto il thread corrente nella coda di attesa di scrittura
+    if (outputBuffer.size == BUFFER_SIZE) {
+        TCBList_enqueue(&writing_queue, current_tcb);
+        current_tcb -> status = Waiting;
+        schedule();
+    }
+
+    // Se non è pieno il buffer di scrittura, scrivo il carattere
+    bufferWrite(&outputBuffer, c);
+    return;
+}

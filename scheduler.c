@@ -20,14 +20,14 @@ TCBList running_queue={
 };
 
 // Coda dei processi in attesa di lettura
-TCBList input_queue={
+TCBList reading_queue={
   .first=NULL,
   .last=NULL,
   .size=0
 };
 
 // Coda dei processi in attesa di scrittura
-TCBList output_queue={
+TCBList writing_queue={
   .first=NULL,
   .last=NULL,
   .size=0
@@ -44,10 +44,14 @@ void startSchedule(void){
 
 void schedule(void) {
   TCB* old_tcb=current_tcb;
-  // we put back the current thread in the queue
+  // Rimetto il processo corrente nella coda di running
   TCBList_enqueue(&running_queue, current_tcb);
 
-  // we fetch the next;
+  // TODO: verifica se il buffer di input non è vuoto e se c'è un task nella lista di attesa di lettura per spostarlo nella cosa di ready
+
+  // TODO: verifica se il buffer di output non è pieno e se c'è un task nella lista di attesa di scrittura per spostarlo nella coda di ready
+  
+  // Rimuovo il processo corrente dalla coda di running
   current_tcb=TCBList_dequeue(&running_queue);
   // we jump to it (useless if it is the only process)
   if (old_tcb!=current_tcb)

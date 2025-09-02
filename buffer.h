@@ -21,3 +21,7 @@ RingBuffer outputBuffer;
 
 // funzione per attivare interrupt in ricezione
 void enableRxInterrupt(void);
+
+// Funzioni richieste dal professore
+char getChar(void);
+void putChar(char c);

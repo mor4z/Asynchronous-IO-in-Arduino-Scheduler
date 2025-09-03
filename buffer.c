@@ -101,3 +101,5 @@ void putChar(char c) {
     bufferWrite(&outputBuffer, c);
     return;
 }
+
+/* TODO: mancano le due funzioni che vanno a mettere in coda di ready i task se i buffer di input o di output non sono vuoti */

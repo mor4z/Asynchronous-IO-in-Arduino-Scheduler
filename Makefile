@@ -25,7 +25,7 @@ OBJS=uart.o\
      atomport_asm.o\
      timer.o\
      scheduler.o\
-	 buffer.o\
+	 functions.o\
 
 HEADERS=uart.h\
         tcb.h.h\
@@ -33,7 +33,7 @@ HEADERS=uart.h\
 		atomport_asm.h\
 		timer.h\
         scheduler.h\
-		buffer.h\
+		functions.h\
 
 BINS= main.elf tcb_queue_test.elf test.elf
 

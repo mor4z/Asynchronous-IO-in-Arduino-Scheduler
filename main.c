@@ -10,7 +10,7 @@
 #include "uart.h"
 #include "atomport_asm.h"
 #include "scheduler.h"
-#include "buffer.h" // Funzioni del buffer
+#include "functions.h" // Funzioni aggiunte
 #define THREAD_STACK_SIZE 256
 #define IDLE_STACK_SIZE 128
 
@@ -35,15 +35,15 @@ void print_fn(uint32_t thread_arg __attribute__((unused))){
     if(strlen(rx) > 1)
       printf("RX: %s \n", rx);
 
-    // TODO: Notifico i processi nella coda di writing
-       
+    // Notifico i processi nella coda di writing
+    checkOutput();
 
     // Resetto l'array di appoggio per la stampa
     memset(rx, 0, BUFFER_SIZE);
 
     sei();  
 
-    _delay_ms(1000);
+    _delay_ms(100);
   }
 }
 
@@ -52,16 +52,15 @@ TCB p1_tcb;
 uint8_t p1_stack[THREAD_STACK_SIZE];
 void p1_fn(uint32_t arg __attribute__((unused))){
   while(1){
-    printf("p1\n"); 
+    // printf("p1\n"); 
     
     cli();
-    /* TODO */
 
     char c = getChar();
     putChar(c);
 
     sei();
-    _delay_ms(1000);
+    _delay_ms(100);
   }
 
 }
@@ -70,16 +69,15 @@ TCB p2_tcb;
 uint8_t p2_stack[THREAD_STACK_SIZE];
 void p2_fn(uint32_t arg __attribute__((unused))){
   while(1){
-    printf("p2\n");
+    // printf("p2\n");
     
     cli();
-    /* TODO */
 
     char c = getChar();
     putChar(c);
 
     sei();
-    _delay_ms(1000);
+    _delay_ms(100);
   }
 }
 
@@ -87,16 +85,15 @@ TCB p3_tcb;
 uint8_t p3_stack[THREAD_STACK_SIZE];
 void p3_fn(uint32_t arg __attribute__((unused))){
   while(1){
-    printf("p3\n");
+    // printf("p3\n");
     
     cli();
-    /* TODO */
 
     char c = getChar();
     putChar(c);
 
     sei();
-    _delay_ms(1000);
+    _delay_ms(100);
   }
 }
 
@@ -104,16 +101,15 @@ TCB p4_tcb;
 uint8_t p4_stack[THREAD_STACK_SIZE];
 void p4_fn(uint32_t arg __attribute__((unused))){
   while(1){
-    printf("p4\n");
+    // printf("p4\n");
     
     cli();
-    /* TODO */
 
     char c = getChar();
     putChar(c);
 
     sei();
-    _delay_ms(1000);
+    _delay_ms(100);
   }
 }
 

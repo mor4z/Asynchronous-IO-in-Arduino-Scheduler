@@ -1,4 +1,4 @@
-#include "buffer.h"
+#include "functions.h"
 
 
 int main() {

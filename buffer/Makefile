@@ -1,5 +1,5 @@
 TARGET = test_buffer
-SRC = test_buffer.c buffer.c
+SRC = test_buffer.c ../functions.c
 
 all: $(TARGET)
 

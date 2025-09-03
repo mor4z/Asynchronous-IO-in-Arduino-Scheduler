@@ -5,7 +5,7 @@
 #include "tcb_list.h"
 #include "atomport_asm.h"
 #include "timer.h"
-#include "buffer.h"
+#include "functions.h"
 
 extern uint8_t uart_interrupt;
 
@@ -48,8 +48,10 @@ void schedule(void) {
   TCBList_enqueue(&running_queue, current_tcb);
 
   // TODO: verifica se il buffer di input non è vuoto e se c'è un task nella lista di attesa di lettura per spostarlo nella cosa di ready
+  checkInput();
 
   // TODO: verifica se il buffer di output non è pieno e se c'è un task nella lista di attesa di scrittura per spostarlo nella coda di ready
+  checkOutput();
   
   // Rimuovo il processo corrente dalla coda di running
   current_tcb=TCBList_dequeue(&running_queue);
@@ -67,6 +69,7 @@ ISR(USART0_RX_vect) {
   bufferWrite(&inputBuffer, c);
 
   // TODO: manda notifica che il buffer di input non è più vuoto
+  checkInput();
 
   sei();
   schedule();

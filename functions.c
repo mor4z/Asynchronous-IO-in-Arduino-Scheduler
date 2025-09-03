@@ -1,9 +1,10 @@
-#include "buffer.h"
+#include "functions.h"
 #include "scheduler.h"
 
 #include <avr/interrupt.h>
 #include <avr/io.h>
 
+// Inizializzo un buffer vuoto
 void bufferInit(RingBuffer* buffer) {
     if (buffer == NULL) {
         printf("[bufferInit -> Errore] buffer == NULL\n");
@@ -22,8 +23,8 @@ void bufferInit(RingBuffer* buffer) {
     printf("[bufferInit] Buffer creato con successo\n");
 } 
 
+// Stampo i campi di un buffer
 void bufferInfo(RingBuffer* buffer) {
-    // buffer = NULL;
     if (buffer == NULL) {
         printf("[bufferInfo -> Errore!]Buffer NULL\n");
         return;
@@ -39,24 +40,28 @@ void bufferInfo(RingBuffer* buffer) {
     printf("[buffer -> head] %u \n[buffer -> tail] %u \n[buffer -> size] %u \n", buffer -> head, buffer -> tail, buffer -> size);
 }
 
+// Scrittura di un carattere su un buffer
 void bufferWrite(RingBuffer* buffer, char c) {
     if ((buffer -> head + 1) % BUFFER_SIZE == (buffer -> tail)) {
         printf("[bufferWrite] Buffer pieno, impossibile scrivere\n");
         return;
     }
 
+    // Aggiornamento dei campi
     buffer -> data[buffer -> head] = c;
     buffer -> head = (buffer -> head + 1) % (BUFFER_SIZE);
     buffer -> size++;
     // printf("[bufferWrite] Scrittura su buffer completata con successo\n");
 }
 
+// Lettura di un carattere da un buffer
 char bufferRead(RingBuffer* buffer) {
     if (buffer -> head == buffer -> tail) {
         printf("[bufferRead] Buffer vuoto, impossibile leggere\n");
         return -1;
     }
 
+    // Aggiornamento dei campi
     char c = buffer -> data[buffer -> tail];
     buffer -> data[buffer -> tail] = 0;
     buffer -> tail = (buffer -> tail + 1) % BUFFER_SIZE;
@@ -65,7 +70,7 @@ char bufferRead(RingBuffer* buffer) {
     return c;
 } 
 
-// funzione per attivare interrupt in ricezione
+// Funzione per attivare interrupt in ricezione della seriale
 void enableRxInterrupt(void){   
     UCSR0B |= (1<<RXCIE0);
 }
@@ -102,4 +107,22 @@ void putChar(char c) {
     return;
 }
 
-/* TODO: mancano le due funzioni che vanno a mettere in coda di ready i task se i buffer di input o di output non sono vuoti */
+
+/* ***********Funzioni per le notifiche ai buffer ********** */
+// Se c'è almeno un caratter nel buffer di input e c'è almeno un task nella coda di attesa di lettura, sposto quel task nella coda di attesa di esecuzione
+void checkInput(void) {
+    if (inputBuffer.size > 0 && reading_queue.size > 0) {
+        TCB* next_input = TCBList_dequeue(&reading_queue);
+        next_input -> status = Ready;
+        TCBList_enqueue(&running_queue, next_input);
+    }
+}
+
+// Se c'è almeno un caratter nel buffer di output e c'è almeno un task nella coda di attesa di scrittura, sposto quel task nella coda di attesa di esecuzione
+void checkOutput(void) {
+    if (outputBuffer.size < BUFFER_SIZE && writing_queue.size > 0) {
+        TCB* next_output = TCBList_dequeue(&writing_queue);
+        next_output -> status = Ready;
+        TCBList_enqueue(&running_queue, next_output);
+    }
+}

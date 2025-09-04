@@ -64,29 +64,12 @@ void schedule(void) {
 ISR(USART0_RX_vect) {
   cli();
 
-  // Scrittura del carattere ricevuto nel buffer di input
+  // Scrittura del carattere ricevuto nel buffer
   char c = UDR0;
-  if (inputBuffer.size < BUFFER_SIZE) {
-    bufferWrite(&inputBuffer, c);
-  }
-  
+  bufferWrite(&inputBuffer, c);
+
+  // TODO: manda notifica che il buffer di input non è più vuoto
   checkInput();
-
-  sei();
-  schedule();
-}
-
-// ISR per la trasmissione da seriale
-ISR(USART0_TX_vect) {
-  cli();
-
-  // Verifico se c'è ancora qualcosa da mandare
-  if (outputBuffer.size > 0) {
-    char c = bufferRead(&outputBuffer);
-    UDR0 = c;
-  } 
-
-  checkOutput();
 
   sei();
   schedule();

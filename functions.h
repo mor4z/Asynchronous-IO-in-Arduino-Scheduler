@@ -19,9 +19,8 @@ char bufferRead(RingBuffer* buffer);                // Lettura di un carattere d
 RingBuffer inputBuffer;
 RingBuffer outputBuffer;
 
-// Funzione per attivare interrupt della seriale
+// Funzione per attivare interrupt in ricezione della seriale
 void enableRxInterrupt(void);
-void enableTxInterrupt(void);
 
 // Funzioni richieste dal professore
 char getChar(void);

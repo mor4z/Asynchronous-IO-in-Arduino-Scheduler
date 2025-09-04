@@ -75,11 +75,6 @@ void enableRxInterrupt(void){
     UCSR0B |= (1<<RXCIE0);
 }
 
-// Funzione per attivare interrupt al termine di una trasmissione della seriale
-void enableTxInterrupt(void){   
-    UCSR0B |= (1<<TXCIE0);
-}
-
 /* ***********Funzioni richieste dal professore ********** 
 char getChar(), that reads, if available a character from the input buffer. If the buffer is empty the "thread" asking for the character is put in a waiting queue. When a character becomes available the thread is brought back in running, and the character is returned (and consumed from the buffer)
 

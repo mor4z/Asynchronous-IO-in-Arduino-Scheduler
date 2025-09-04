@@ -21,30 +21,32 @@ char rx[BUFFER_SIZE];  // Array di appoggio per stampare i caratteri ricevuti
 TCB print_tcb;
 uint8_t print_stack[IDLE_STACK_SIZE];
 void print_fn(uint32_t thread_arg __attribute__((unused))){
-  while(1) {
-    cli();  
 
-    // Consumo un carattere alla volta il buffer di output
-    int i = 0;
-    while(outputBuffer.size > 0 && i < BUFFER_SIZE){
-      rx[i++] = bufferRead(&outputBuffer);
+    while(1) {
+        cli();  // disabilita interrupt per leggere in sicurezza il buffer
+
+        // Legge fino a PRINT_BUFFER_SIZE caratteri dal buffer di output
+        int i = 0;
+        while (i < BUFFER_SIZE - 1 && outputBuffer.size > 0) {
+            rx[i++] = bufferRead(&outputBuffer);
+        }
+
+        sei();  // riabilita interrupt
+
+        if (i > 0) {
+            rx[i] = '\0';  // terminatore di stringa
+
+            // Stampa sicura usando la funzione che scrive sul buffer TX
+            // La ISR TX gestirà la scrittura reale su UDR0
+            uint8_t* p = (uint8_t*)rx;
+            while (*p) {
+                putChar(*p++);
+            }
+        }
+
+        // Piccola pausa per evitare busy wait continuo
+        _delay_ms(50);
     }
-
-    rx[i] = '\0'; // Terminatore di stringa
-
-    if(strlen(rx) > 1)
-      printf("RX: %s \n", rx);
-
-    // Notifico i processi nella coda di writing
-    checkOutput();
-
-    // Resetto l'array di appoggio per la stampa
-    memset(rx, 0, BUFFER_SIZE);
-
-    sei();  
-
-    _delay_ms(100);
-  }
 }
 
 // Altri processi: quando arriverà una interruzione dalla UART, questi dovranno scrivere sull'inputBuffer il carattere ricevuto getChar() e riportarlo sull'outputBuffer putChar(). Nel caso in cui non possano svolgere una di queste due operazioni, verranno messi nella rispettiva coda di attesa. 
@@ -120,6 +122,7 @@ int main(void){
 
   // Attivo gli interrupt in ricezione della seriale
   enableRxInterrupt();
+  enableTxInterrupt();
 
   // Inizializzazione dei buffer
   bufferInit(&inputBuffer);

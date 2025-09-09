@@ -47,10 +47,10 @@ void schedule(void) {
   // Rimetto il processo corrente nella coda di running
   TCBList_enqueue(&running_queue, current_tcb);
 
-  // TODO: verifica se il buffer di input non è vuoto e se c'è un task nella lista di attesa di lettura per spostarlo nella cosa di ready
+  // Verifica se il buffer di input non è vuoto e se c'è un task nella lista di attesa di lettura per spostarlo nella cosa di ready
   checkInput();
 
-  // TODO: verifica se il buffer di output non è pieno e se c'è un task nella lista di attesa di scrittura per spostarlo nella coda di ready
+  // Verifica se il buffer di output non è pieno e se c'è un task nella lista di attesa di scrittura per spostarlo nella coda di ready
   checkOutput();
   
   // Rimuovo il processo corrente dalla coda di running
@@ -64,13 +64,13 @@ void schedule(void) {
 ISR(USART0_RX_vect) {
   cli();
 
+  PORTB |= _BV(PB7); // debugging
+
   // Scrittura del carattere ricevuto nel buffer
   char c = UDR0;
-  if (inputBuffer.size < BUFFER_SIZE) {
-    bufferWrite(&inputBuffer, c);
-  }
+  bufferWrite(&inputBuffer, c);
 
-  // TODO: manda notifica che il buffer di input non è più vuoto
+  // Manda notifica che il buffer di input non è più vuoto
   checkInput();
 
   sei();
@@ -78,14 +78,18 @@ ISR(USART0_RX_vect) {
 }
 
 // ISR per la trasmissione da seriale
-ISR(USART0_TX_vect) {
+ISR(USART0_UDRE_vect) {
   cli();
 
   // Verifico se c'è ancora qualcosa da mandare
   if (outputBuffer.size > 0) {
     char c = bufferRead(&outputBuffer);
     UDR0 = c;
-  } 
+    PORTB &= ~(1 << PB7); // debugging
+  } else if (outputBuffer.size == 0) {
+    // Niente da trasmettere disabilito interrupt di trasmissione
+    UCSR0B &= ~_BV(UDRIE0);
+  }
 
   checkOutput();
 

@@ -26,6 +26,7 @@ void print_fn(uint32_t thread_arg __attribute__((unused))){
 
     // Consumo un carattere alla volta il buffer di output
     int i = 0;
+    
     while(outputBuffer.size > 0 && i < BUFFER_SIZE){
       rx[i++] = bufferRead(&outputBuffer);
     }
@@ -124,6 +125,10 @@ int main(void){
   // Inizializzazione dei buffer
   bufferInit(&inputBuffer);
   bufferInit(&outputBuffer);  
+
+  // uso il LED su pin 13 (PB7) per debugging (lo accendo quando arriva un interrupt in ricezione, lo spengo quando arriva un interrupt di fine trasmissione)
+  DDRB |= (1 << PB7);
+  PORTB &= ~(1 << PB7);
 
   // Pulisco l'array di appoggio per stampare i caratteri ricevuti
   memset(&rx, 0, BUFFER_SIZE);

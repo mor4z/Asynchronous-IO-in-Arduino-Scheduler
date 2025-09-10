@@ -7,11 +7,13 @@
 RingBuffer inputBuffer;
 RingBuffer outputBuffer;
 
-#define MAX_MSG_LEN 128
+volatile uint8_t a;
+volatile uint8_t PrintFlag;
+volatile char buf[BUFFER_SIZE];
 
 int main(void) {
     printf_init();
-    sei(); 
+    sei();
 
     // Inizializzo i buffer
     bufferInit(&inputBuffer);
@@ -21,33 +23,44 @@ int main(void) {
     DDRB |= (1 << PB7);
     PORTB &= ~(1 << PB7);
 
-    usart_pstr("UART pronta\r\n");
+    usart_pstr("UART pronta\n");
 
-    char msg[MAX_MSG_LEN];
-    uint8_t idx = 0;
+    a = 1;
+    PrintFlag = 0;
 
-    while (1) {
-        if (inputBuffer.size > 0) {
+    while(1) {
+
+        while (inputBuffer.size > 0) {
+            // printf("size = %d\n", inputBuffer.size);
             char c = getChar();
 
-            // Se ricevo newline mando il messaggio completo
-            if (c == '\n' || c == '\r') {
-                msg[idx] = '\0'; // termina stringa
-                usart_pstr("Ricevuto: ");
-                usart_pstr(msg);
-                usart_pstr("\r\n");
-
-                // Reset indice per il prossimo messaggio
-                idx = 0;
-            } else {
-                // Scrivo nel buffer i caratteri
-                if (idx < (MAX_MSG_LEN - 1)) {
-                    msg[idx++] = c; 
-                    // putChar(c);
-                    // bufferInfo(&outputBuffer);
-                }
-            }
+            putChar(c);
+            _delay_ms(10);
         }
-        _delay_ms(5);
+        
+        _delay_ms(1000);
+
+        // bufferInfo(&outputBuffer);
+        
+        printf("a = %d\n", a);
+
+        if (a >= BUFFER_SIZE)
+            break;
+
+    } 
+
+    if (PrintFlag == 0) {
+        printf("Spazio esaurito\n");
     }
+    
+    // stampa dell'output buffer
+    while (outputBuffer.size > 0) {
+        char c = bufferRead(&outputBuffer);
+        printf("%c", c);
+    }
+    printf("\nFine stampa");
+    
+    printf("\n\nProgramma terminato\n");
+
+    bufferInfo(&outputBuffer);
 }

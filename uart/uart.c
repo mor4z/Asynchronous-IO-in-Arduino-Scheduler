@@ -26,6 +26,7 @@ int usart_putchar_printf(char var, FILE *stream);
 
 extern RingBuffer inputBuffer;
 extern RingBuffer outputBuffer;
+extern volatile uint8_t a;
 
 static FILE mystdout = FDEV_SETUP_STREAM(usart_putchar_printf, NULL, _FDEV_SETUP_WRITE);
 
@@ -87,23 +88,23 @@ void printf_init(void){
 
 // ISR per la ricezione da seriale
 ISR(USART0_RX_vect) {
-  PORTB |= _BV(PB7); // debugging
-
-  // Scrittura del carattere ricevuto nel buffer
   char c = UDR0;
+  if (c == '\n' || c == '\r') {
+    c = '\0';
+  }
+    
   bufferWrite(&inputBuffer, c);
+  a++;
+  PORTB |= _BV(PB7); // debugging
 }
+
 
 // ISR per la trasmissione da seriale
 ISR(USART0_UDRE_vect) {
-  PORTB &= ~(1 << PB7); // debugging
-  // Verifico se c'è ancora qualcosa da mandare
-  if (outputBuffer.size > 0) {
-    char c = bufferRead(&outputBuffer);
-    UDR0 = c;
-  } else if (outputBuffer.size == 0) {
-    // Niente da trasmettere disabilito interrupt di trasmissione
+  if (outputBuffer.size == 0) {
     UCSR0B &= ~_BV(UDRIE0);
+  } else {
+    UDR0 = bufferRead(&outputBuffer);
   }
-  
+  PORTB &= ~(1 << PB7); // debugging
 }

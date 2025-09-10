@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE 64
 
 typedef struct {
     char data[BUFFER_SIZE];

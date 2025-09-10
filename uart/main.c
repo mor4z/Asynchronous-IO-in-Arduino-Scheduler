@@ -10,7 +10,7 @@ RingBuffer outputBuffer;
 #define MAX_MSG_LEN 128
 
 int main(void) {
-    usart_init(MYUBRR);
+    printf_init();
     sei(); 
 
     // Inizializzo i buffer
@@ -21,21 +21,21 @@ int main(void) {
     DDRB |= (1 << PB7);
     PORTB &= ~(1 << PB7);
 
-    uart_pstr("UART pronta\r\n");
+    usart_pstr("UART pronta\r\n");
 
     char msg[MAX_MSG_LEN];
     uint8_t idx = 0;
 
     while (1) {
-        if (uart_available()) {
+        if (inputBuffer.size > 0) {
             char c = getChar();
 
             // Se ricevo newline mando il messaggio completo
             if (c == '\n' || c == '\r') {
                 msg[idx] = '\0'; // termina stringa
-                uart_pstr("Ricevuto: ");
-                uart_pstr(msg);
-                uart_pstr("\r\n");
+                usart_pstr("Ricevuto: ");
+                usart_pstr(msg);
+                usart_pstr("\r\n");
 
                 // Reset indice per il prossimo messaggio
                 idx = 0;
@@ -43,6 +43,8 @@ int main(void) {
                 // Scrivo nel buffer i caratteri
                 if (idx < (MAX_MSG_LEN - 1)) {
                     msg[idx++] = c; 
+                    // putChar(c);
+                    // bufferInfo(&outputBuffer);
                 }
             }
         }

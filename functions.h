@@ -18,10 +18,8 @@ char bufferRead(RingBuffer* buffer);                // Lettura di un carattere d
 
 RingBuffer inputBuffer;
 RingBuffer outputBuffer;
+RingBuffer printBuffer;
 
-// Funzione per attivare interrupt della seriale
-void enableRxInterrupt(void);
-void enableTxInterrupt(void);
 
 // Funzioni richieste dal professore
 char getChar(void);
@@ -30,6 +28,3 @@ void putChar(char c);
 // Funzioni che notificano che i buffer non sono vuoti
 void checkInput(void);
 void checkOutput(void);
-
-// Altra funzione per gestire il buffer che stampa
-void addChar(char c);

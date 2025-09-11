@@ -88,7 +88,9 @@ ISR(USART0_UDRE_vect) {
   if (outputBuffer.size == 0) {
     UCSR0B &= ~_BV(UDRIE0);
   } else {
-    UDR0 = bufferRead(&outputBuffer);
+    char c = bufferRead(&outputBuffer);
+    UDR0 = c;
+    bufferWrite(&printBuffer, c);
   }
   PORTB &= ~(1 << PB7); // debugging
 

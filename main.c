@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+#include <util/atomic.h>
 #include "tcb.h"
 #include "tcb_list.h"
 #include "uart.h"
@@ -21,11 +22,21 @@ volatile uint8_t idx;
 TCB print_tcb;
 uint8_t print_stack[IDLE_STACK_SIZE];
 void print_fn(uint32_t thread_arg __attribute__((unused))){
+  idx = 0;
   while(1) {
-    cli();  
+    cli();
+    
+    ATOMIC_BLOCK(ATOMIC_FORCEON) {
+      while (printBuffer.size > 0) {
+        tx[idx] = bufferRead(&printBuffer);
+        idx++;
+      }
+    }
 
-    if(strlen(tx) > 1)
-      printf("TX: %s \n", tx);
+    tx[idx] = '\0';
+
+    if (strlen(tx) > 1)
+      printf("%s\n", tx);
 
     // Notifico i processi nella coda di writing
     checkOutput();
@@ -118,6 +129,7 @@ int main(void){
   // Inizializzazione dei buffer
   bufferInit(&inputBuffer);
   bufferInit(&outputBuffer);  
+  bufferInit(&printBuffer);
 
   // Uso il LED su pin 13 (PB7) per debugging (lo accendo quando arriva un interrupt in ricezione, lo spengo quando arriva un interrupt di fine trasmissione)
   DDRB |= (1 << PB7);
@@ -153,7 +165,7 @@ int main(void){
   TCBList_enqueue(&running_queue, &p2_tcb);
   TCBList_enqueue(&running_queue, &p3_tcb);
   TCBList_enqueue(&running_queue, &p4_tcb);
-  // TCBList_enqueue(&running_queue, &print_tcb);
+  TCBList_enqueue(&running_queue, &print_tcb);
 
   printf("starting\n");
   startSchedule();

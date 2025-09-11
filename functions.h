@@ -30,3 +30,6 @@ void putChar(char c);
 // Funzioni che notificano che i buffer non sono vuoti
 void checkInput(void);
 void checkOutput(void);
+
+// Altra funzione per gestire il buffer che stampa
+void addChar(char c);

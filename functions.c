@@ -3,6 +3,7 @@
 
 #include <avr/interrupt.h>
 #include <avr/io.h>
+#include <util/atomic.h>
 
 // Inizializzo un buffer vuoto
 void bufferInit(RingBuffer* buffer) {
@@ -75,10 +76,6 @@ void enableRxInterrupt(void){
     UCSR0B |= (1<<RXCIE0);
 }
 
-// Funzione per attivare interrupt al termine di una trasmissione della seriale
-void enableTxInterrupt(void){   
-    UCSR0B |= (1<<TXCIE0);
-}
 
 /* ***********Funzioni richieste dal professore ********** 
 char getChar(), that reads, if available a character from the input buffer. If the buffer is empty the "thread" asking for the character is put in a waiting queue. When a character becomes available the thread is brought back in running, and the character is returned (and consumed from the buffer)
@@ -95,7 +92,10 @@ char getChar(void) {
     }
 
     // Se c'è qualcosa nel buffer di lettura, leggo e ritorno il carattere nel buffer
-    char c = bufferRead(&inputBuffer);
+    char c;
+    ATOMIC_BLOCK(ATOMIC_FORCEON) {
+        c = bufferRead(&inputBuffer);
+    }
     return c;
 }
 
@@ -108,13 +108,16 @@ void putChar(char c) {
     }
 
     // Se non è pieno il buffer di scrittura, scrivo il carattere
-    bufferWrite(&outputBuffer, c);
+    ATOMIC_BLOCK(ATOMIC_FORCEON) {
+        bufferWrite(&outputBuffer, c);
+    }
+    UCSR0B |= _BV(UDRIE0); // Abilito interrupt di trasmissione
     return;
 }
 
 
 /* ***********Funzioni per le notifiche ai buffer ********** */
-// Se c'è almeno un caratter nel buffer di input e c'è almeno un task nella coda di attesa di lettura, sposto quel task nella coda di attesa di esecuzione
+// Se c'è almeno un carattere nel buffer di input e c'è almeno un task nella coda di attesa di lettura, sposto quel task nella coda di attesa di esecuzione
 void checkInput(void) {
     if (inputBuffer.size > 0 && reading_queue.size > 0) {
         TCB* next_input = TCBList_dequeue(&reading_queue);
@@ -123,7 +126,7 @@ void checkInput(void) {
     }
 }
 
-// Se c'è almeno un caratter nel buffer di output e c'è almeno un task nella coda di attesa di scrittura, sposto quel task nella coda di attesa di esecuzione
+// Se c'è almeno un carattere nel buffer di output e c'è almeno un task nella coda di attesa di scrittura, sposto quel task nella coda di attesa di esecuzione
 void checkOutput(void) {
     if (outputBuffer.size < BUFFER_SIZE && writing_queue.size > 0) {
         TCB* next_output = TCBList_dequeue(&writing_queue);

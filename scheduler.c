@@ -7,7 +7,6 @@
 #include "timer.h"
 #include "functions.h"
 
-extern uint8_t uart_interrupt;
 
 // the (detached) running process
 TCB* current_tcb=NULL;
@@ -47,7 +46,7 @@ void schedule(void) {
   // Rimetto il processo corrente nella coda di running
   TCBList_enqueue(&running_queue, current_tcb);
 
-  // Verifica se il buffer di input non è vuoto e se c'è un task nella lista di attesa di lettura per spostarlo nella cosa di ready
+  // Verifica se il buffer di input non è vuoto e se c'è un task nella lista di attesa di lettura per spostarlo nella coda di ready
   checkInput();
 
   // Verifica se il buffer di output non è pieno e se c'è un task nella lista di attesa di scrittura per spostarlo nella coda di ready
@@ -68,6 +67,10 @@ ISR(USART0_RX_vect) {
 
   // Scrittura del carattere ricevuto nel buffer
   char c = UDR0;
+  if (c == '\n' || c == '\r') {
+    c = '\0'; // Sostituisco l'invio con il terminatore di stringa
+  }
+
   bufferWrite(&inputBuffer, c);
 
   // Manda notifica che il buffer di input non è più vuoto
@@ -81,15 +84,13 @@ ISR(USART0_RX_vect) {
 ISR(USART0_UDRE_vect) {
   cli();
 
-  // Verifico se c'è ancora qualcosa da mandare
-  if (outputBuffer.size > 0) {
-    char c = bufferRead(&outputBuffer);
-    UDR0 = c;
-    PORTB &= ~(1 << PB7); // debugging
-  } else if (outputBuffer.size == 0) {
-    // Niente da trasmettere disabilito interrupt di trasmissione
+  // Se non c'è nulla nel buffer di scrittura, abilito gli interrupt di trasmissione, sennò mando un carattere dal buffer
+  if (outputBuffer.size == 0) {
     UCSR0B &= ~_BV(UDRIE0);
+  } else {
+    UDR0 = bufferRead(&outputBuffer);
   }
+  PORTB &= ~(1 << PB7); // debugging
 
   checkOutput();
 

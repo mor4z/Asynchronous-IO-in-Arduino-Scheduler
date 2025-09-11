@@ -14,8 +14,8 @@
 #define THREAD_STACK_SIZE 256
 #define IDLE_STACK_SIZE 128
 
-
-char rx[BUFFER_SIZE];  // Array di appoggio per stampare i caratteri ricevuti
+char tx[BUFFER_SIZE];
+volatile uint8_t idx;
 
 // Processo di stampa: processo che dovrà stampare i caratteri dall'outputBuffer
 TCB print_tcb;
@@ -24,23 +24,15 @@ void print_fn(uint32_t thread_arg __attribute__((unused))){
   while(1) {
     cli();  
 
-    // Consumo un carattere alla volta il buffer di output
-    int i = 0;
-    
-    while(outputBuffer.size > 0 && i < BUFFER_SIZE){
-      rx[i++] = bufferRead(&outputBuffer);
-    }
-
-    rx[i] = '\0'; // Terminatore di stringa
-
-    if(strlen(rx) > 1)
-      printf("RX: %s \n", rx);
+    if(strlen(tx) > 1)
+      printf("TX: %s \n", tx);
 
     // Notifico i processi nella coda di writing
     checkOutput();
 
     // Resetto l'array di appoggio per la stampa
-    memset(rx, 0, BUFFER_SIZE);
+    memset(tx, 0, BUFFER_SIZE);
+    idx = 0;
 
     sei();  
 
@@ -53,13 +45,13 @@ TCB p1_tcb;
 uint8_t p1_stack[THREAD_STACK_SIZE];
 void p1_fn(uint32_t arg __attribute__((unused))){
   while(1){
-    // printf("p1\n"); 
-    
     cli();
-
-    char c = getChar();
-    putChar(c);
-
+    // printf("p1: ");
+    while (inputBuffer.size > 0) {
+      char c = getChar();
+      putChar(c);
+    }
+    
     sei();
     _delay_ms(100);
   }
@@ -70,12 +62,12 @@ TCB p2_tcb;
 uint8_t p2_stack[THREAD_STACK_SIZE];
 void p2_fn(uint32_t arg __attribute__((unused))){
   while(1){
-    // printf("p2\n");
-    
     cli();
-
-    char c = getChar();
-    putChar(c);
+    // printf("p2: ");
+    while (inputBuffer.size > 0) {
+      char c = getChar();
+      putChar(c);
+    }
 
     sei();
     _delay_ms(100);
@@ -86,12 +78,12 @@ TCB p3_tcb;
 uint8_t p3_stack[THREAD_STACK_SIZE];
 void p3_fn(uint32_t arg __attribute__((unused))){
   while(1){
-    // printf("p3\n");
-    
     cli();
-
-    char c = getChar();
-    putChar(c);
+    // printf("p3: ");
+    while (inputBuffer.size > 0) {
+      char c = getChar();
+      putChar(c);
+    }
 
     sei();
     _delay_ms(100);
@@ -102,12 +94,12 @@ TCB p4_tcb;
 uint8_t p4_stack[THREAD_STACK_SIZE];
 void p4_fn(uint32_t arg __attribute__((unused))){
   while(1){
-    // printf("p4\n");
-    
     cli();
-
-    char c = getChar();
-    putChar(c);
+    // printf("p4: ");
+    while (inputBuffer.size > 0) {
+      char c = getChar();
+      putChar(c);
+    }
 
     sei();
     _delay_ms(100);
@@ -119,31 +111,29 @@ int main(void){
   // we need printf for debugging
   printf_init();
 
-  // Attivo gli interrupt in ricezione della seriale
-  enableRxInterrupt();
+  // Attivo le interruzioni globali
+  sei();
+
 
   // Inizializzazione dei buffer
   bufferInit(&inputBuffer);
   bufferInit(&outputBuffer);  
 
-  // uso il LED su pin 13 (PB7) per debugging (lo accendo quando arriva un interrupt in ricezione, lo spengo quando arriva un interrupt di fine trasmissione)
+  // Uso il LED su pin 13 (PB7) per debugging (lo accendo quando arriva un interrupt in ricezione, lo spengo quando arriva un interrupt di fine trasmissione)
   DDRB |= (1 << PB7);
   PORTB &= ~(1 << PB7);
-
-  // Pulisco l'array di appoggio per stampare i caratteri ricevuti
-  memset(&rx, 0, BUFFER_SIZE);
-
+ 
   // Creazione dei task 
   TCB_create(&print_tcb,
              print_stack+IDLE_STACK_SIZE-1,
              print_fn,
              0);
-
+ 
   TCB_create(&p1_tcb,
              p1_stack+THREAD_STACK_SIZE-1,
              p1_fn,
              0);
-
+ 
   TCB_create(&p2_tcb,
              p2_stack+THREAD_STACK_SIZE-1,
              p2_fn,
@@ -153,17 +143,17 @@ int main(void){
              p3_stack+THREAD_STACK_SIZE-1,
              p3_fn,
              0);
-
+ 
   TCB_create(&p4_tcb,
              p4_stack+THREAD_STACK_SIZE-1,
              p4_fn,
              0);
-
+ 
   TCBList_enqueue(&running_queue, &p1_tcb);
   TCBList_enqueue(&running_queue, &p2_tcb);
   TCBList_enqueue(&running_queue, &p3_tcb);
   TCBList_enqueue(&running_queue, &p4_tcb);
-  TCBList_enqueue(&running_queue, &print_tcb);
+  // TCBList_enqueue(&running_queue, &print_tcb);
 
   printf("starting\n");
   startSchedule();

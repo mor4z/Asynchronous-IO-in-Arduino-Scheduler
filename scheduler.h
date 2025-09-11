@@ -12,5 +12,3 @@ void startSchedule(void);
 
 // used in the ISR of the timer
 void schedule(void);
-     
-// TODO: funzione che verifica se il buffer di lettura

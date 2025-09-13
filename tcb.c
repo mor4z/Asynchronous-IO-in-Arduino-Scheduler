@@ -23,6 +23,7 @@ void TCB_create(TCB* tcb, Pointer stack_top, ThreadFn thread_fn, uint32_t thread
   //initialize variables
   tcb->thread_fn=thread_fn;
   tcb->thread_arg=thread_arg;
+  tcb -> type = type;
   tcb->prev=NULL;
   tcb->next=NULL;
   tcb->status=Ready;

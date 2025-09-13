@@ -16,6 +16,7 @@ typedef struct TCB {
   
   ThreadFn thread_fn;           /* Function of the thread */
   uint32_t thread_arg;          /* Argument to be passed to the thread function until it starts*/
+    TaskType type;                /* Aggiunta per distringuere i task di stampa da quelli di lettura*/
 
   struct TCB* next;
   struct TCB* prev;
@@ -26,4 +27,4 @@ typedef struct TCB {
 } TCB;  
 
 
-void TCB_create(TCB* tcb, Pointer stack_top, ThreadFn thread_fn, uint32_t thread_arg);
+void TCB_create(TCB* tcb, Pointer stack_top, ThreadFn thread_fn, uint32_t thread_arg, TaskType type);

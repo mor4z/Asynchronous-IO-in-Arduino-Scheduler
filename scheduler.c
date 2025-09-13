@@ -7,6 +7,7 @@
 #include "timer.h"
 #include "functions.h"
 
+extern TCB print_tcb;
 
 // the (detached) running process
 TCB* current_tcb=NULL;
@@ -43,17 +44,20 @@ void startSchedule(void){
 
 void schedule(void) {
   TCB* old_tcb=current_tcb;
-  // Rimetto il processo corrente nella coda di running
-  TCBList_enqueue(&running_queue, current_tcb);
+  // Metto il task corrente nella giusta coda di attesa
+  if (old_tcb -> type == PRINT) {
+    old_tcb -> status = Waiting;
+    TCBList_enqueue(&writing_queue, current_tcb);
+  } else {
+    old_tcb -> status = Waiting;
+    TCBList_enqueue(&reading_queue, current_tcb);
+  }
+    
+  // Scelgo da dove pescare il prossimo task
+  if (!checkInput())
+    checkOutput();
 
-  // Verifica se il buffer di input non è vuoto e se c'è un task nella lista di attesa di lettura per spostarlo nella coda di ready
-  checkInput();
-
-  // Verifica se il buffer di output non è pieno e se c'è un task nella lista di attesa di scrittura per spostarlo nella coda di ready
-  checkOutput();
-  
-  // Rimuovo il processo corrente dalla coda di running
-  current_tcb=TCBList_dequeue(&running_queue);
+  // we fetch the next;
   // we jump to it (useless if it is the only process)
   if (old_tcb!=current_tcb)
     archContextSwitch(old_tcb, current_tcb);
@@ -74,7 +78,7 @@ ISR(USART0_RX_vect) {
   bufferWrite(&inputBuffer, c);
 
   // Manda notifica che il buffer di input non è più vuoto
-  checkInput();
+  // checkInput();
 
   sei();
   schedule();
@@ -93,8 +97,6 @@ ISR(USART0_UDRE_vect) {
     bufferWrite(&printBuffer, c);
   }
   PORTB &= ~(1 << PB7); // debugging
-
-  checkOutput();
 
   sei();
   schedule();

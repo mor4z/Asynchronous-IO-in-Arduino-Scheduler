@@ -81,6 +81,13 @@ int main(void){
   sei();
   enableRxInterrupt();
 
+  bufferInit(&inputBuffer);
+  bufferInit(&outputBuffer);
+
+  // LED su pin 13 (PB7) per debugging
+  DDRB |= (1 << PB7);
+  PORTB &= ~(1 << PB7);
+
   TCB_create(&p1_tcb,
              p1_stack+THREAD_STACK_SIZE-1,
              read_fn,

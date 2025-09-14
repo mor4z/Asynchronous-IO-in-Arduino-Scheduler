@@ -9,7 +9,8 @@ typedef struct {
 } TCBList;
 
 // global list of tcbs containing the running processes
-extern TCBList tcb_queue;
+extern TCBList reading_queue;
+extern TCBList writing_queue;
 
 // removes (if any) first tcb from the list
 TCB* TCBList_dequeue(TCBList* list);

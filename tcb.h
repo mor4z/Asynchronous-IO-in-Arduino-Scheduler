@@ -8,7 +8,8 @@
 typedef uint8_t* Pointer;
 typedef void (* ThreadFn)(uint32_t thread_args);
 
-typedef enum {Running=0x0, Terminated=0x1, Ready=0x2, Waiting=0x3} ThreadStatus;     
+typedef enum {Running=0x0, Terminated=0x1, Ready=0x2, Waiting=0x3} ThreadStatus;  
+typedef enum {PRINT = 0x0, READ = 0x1} TaskType;   
 
 // thread control block
 typedef struct TCB {
@@ -16,7 +17,7 @@ typedef struct TCB {
   
   ThreadFn thread_fn;           /* Function of the thread */
   uint32_t thread_arg;          /* Argument to be passed to the thread function until it starts*/
-    TaskType type;                /* Aggiunta per distringuere i task di stampa da quelli di lettura*/
+  TaskType type;                /* Aggiunta per distringuere i task di stampa da quelli di lettura*/
 
   struct TCB* next;
   struct TCB* prev;

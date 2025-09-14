@@ -19,7 +19,7 @@ static void _trampoline(void){
 /* Constructor for the TCB. Takes as arguments the pointer to the TCB, the pointer to the top of the stack (because it grows down, from the top to the bottom),
    the thread function that the process has to execute and the arguments I have to pass to the thread function
 */
-void TCB_create(TCB* tcb, Pointer stack_top, ThreadFn thread_fn, uint32_t thread_arg){
+void TCB_create(TCB* tcb, Pointer stack_top, ThreadFn thread_fn, uint32_t thread_arg, TaskType type) {
   //initialize variables
   tcb->thread_fn=thread_fn;
   tcb->thread_arg=thread_arg;

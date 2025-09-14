@@ -26,5 +26,7 @@ char getChar(void);
 void putChar(char c);
 
 // Funzioni che notificano che i buffer non sono vuoti
-void checkInput(void);
-void checkOutput(void);
+uint8_t checkInput(void);
+uint8_t checkOutput(void);
+
+void enableRxInterrupt(void);

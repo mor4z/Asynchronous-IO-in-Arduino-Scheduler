@@ -7,43 +7,34 @@
 #include "timer.h"
 #include "functions.h"
 
-extern TCB print_tcb;
-
 // the (detached) running process
 TCB* current_tcb=NULL;
 
-// Coda dei processi running
-TCBList running_queue={
-  .first=NULL,
-  .last=NULL,
-  .size=0
-};
-
-// Coda dei processi in attesa di lettura
+// the read waiting queue
 TCBList reading_queue={
   .first=NULL,
   .last=NULL,
   .size=0
 };
 
-// Coda dei processi in attesa di scrittura
+// the write waiting queue
 TCBList writing_queue={
   .first=NULL,
   .last=NULL,
   .size=0
 };
 
-
 void startSchedule(void){
   cli();
-  current_tcb=TCBList_dequeue(&running_queue);
+  current_tcb=TCBList_dequeue(&reading_queue);
   assert(current_tcb);
   timerStart();
   archFirstThreadRestore(current_tcb);
 }
 
 void schedule(void) {
-  TCB* old_tcb=current_tcb;
+  TCB* old_tcb = current_tcb;
+
   // Metto il task corrente nella giusta coda di attesa
   if (old_tcb -> type == PRINT) {
     old_tcb -> status = Waiting;
@@ -62,6 +53,7 @@ void schedule(void) {
   if (old_tcb!=current_tcb)
     archContextSwitch(old_tcb, current_tcb);
 }
+
 
 // ISR per la ricezione da seriale
 ISR(USART0_RX_vect) {

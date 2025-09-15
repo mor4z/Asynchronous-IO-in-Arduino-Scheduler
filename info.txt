@@ -15,3 +15,8 @@ A2. Asynchronous IO in Arduino Scheduler.
 
 comando per la lettura ./serial/serial_linux /dev/ttyACM0 19200 1
 comando per la scrittura ./serial/serial_linux /dev/ttyACM0 19200 0
+
+oppure (guarda dentro uart.c il baudrate)
+
+comando per la lettura ./serial/serial_linux /dev/ttyACM0 57600 1
+comando per la scrittura ./serial/serial_linux /dev/ttyACM0 57600 0

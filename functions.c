@@ -86,8 +86,6 @@ void putChar(char), that writes (if there is enough space) a character on the ou
 char getChar(void) {
     // Se il buffer di lettura è vuoto, metto il thread corrente nella coda di attesa di lettura
     if (inputBuffer.size == 0) {
-        // TCBList_enqueue(&reading_queue, current_tcb);
-        // current_tcb -> status = Waiting;
         schedule();
     }
 
@@ -102,8 +100,6 @@ char getChar(void) {
 void putChar(char c) {
     // Se il buffer di scrittura è pieno, metto il thread corrente nella coda di attesa di scrittura
     if (outputBuffer.size >= BUFFER_SIZE) {
-        // TCBList_enqueue(&writing_queue, current_tcb);
-        // current_tcb -> status = Waiting;
         schedule();
     }
 

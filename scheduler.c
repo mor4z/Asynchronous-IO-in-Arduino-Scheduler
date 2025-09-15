@@ -69,9 +69,6 @@ ISR(USART0_RX_vect) {
 
   bufferWrite(&inputBuffer, c);
 
-  // Manda notifica che il buffer di input non è più vuoto
-  // checkInput();
-
   sei();
   schedule();
 }

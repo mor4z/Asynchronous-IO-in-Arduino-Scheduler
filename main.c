@@ -83,6 +83,7 @@ int main(void){
 
   bufferInit(&inputBuffer);
   bufferInit(&outputBuffer);
+  bufferInit(&printBuffer);
 
   // LED su pin 13 (PB7) per debugging
   DDRB |= (1 << PB7);

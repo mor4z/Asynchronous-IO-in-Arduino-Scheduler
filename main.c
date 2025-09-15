@@ -52,9 +52,6 @@ void print_fn(uint32_t arg __attribute__((unused))){
     memset(tx, 0, BUFFER_SIZE);
     idx = 0;
 
-    // Notifico i processi nella coda di writing
-    // checkOutput();
-
     sei();
     _delay_ms(100);
   }

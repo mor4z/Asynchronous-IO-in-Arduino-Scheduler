@@ -4,14 +4,12 @@ A2. Asynchronous IO in Arduino Scheduler.
 
    Implement two functions:
    char getChar(), that reads, if available a character from the input buffer.
-                   If the buffer is empty the "thread" asking for the character
-                   is put in a waiting queue.
-                   When a character becomes available the thread is brought back in running,
-                   and the character is returned (and consumed from the buffer)
+   If the buffer is empty the "thread" asking for the character
+   is put in a waiting queue.
+   When a character becomes available the thread is brought back in running, and the character is returned (and consumed from the buffer)
 
    void putChar(char), that writes (if there is enough space) a character on the output buffer.
-                   If the buffer is full, the thread is put in waiting, and resumed whenever there is enough room
-                   in the buffer.
+   If the buffer is full, the thread is put in waiting, and resumed whenever there is enough room in the buffer.
 
 comando per la lettura ./serial/serial_linux /dev/ttyACM0 19200 1
 comando per la scrittura ./serial/serial_linux /dev/ttyACM0 19200 0

@@ -16,7 +16,8 @@
 #define IDLE_STACK_SIZE 128
 
 char tx[BUFFER_SIZE];
-volatile uint8_t idx;
+char rx[BUFFER_SIZE];
+uint8_t size;
 
 //statically allocated variables where we put our stuff
 TCB p1_tcb;
@@ -34,23 +35,15 @@ uint8_t p4_stack[THREAD_STACK_SIZE];
 void print_fn(uint32_t arg __attribute__((unused))){
   while(1){
     cli();
-    // printf("print\n");
 
-    ATOMIC_BLOCK(ATOMIC_FORCEON) {
-      while (printBuffer.size > 0) {
-        tx[idx] = bufferRead(&printBuffer);
-        idx++;
-      }
-    }
-
-    tx[idx] = '\0';
-
-    if (strlen(tx) > 1)
-      printf("%s\n", tx);
-
-    // Resetto l'array di appoggio per la stampa
+    sprintf(tx, "%s \n", rx);
+    if (strlen(rx) > 1)
+      printString(tx);
+    
+    // Resetto gli array di appoggio per la stampa
     memset(tx, 0, BUFFER_SIZE);
-    idx = 0;
+    memset(rx, 0, BUFFER_SIZE);
+    size = 0;
 
     sei();
     _delay_ms(100);
@@ -60,10 +53,11 @@ void print_fn(uint32_t arg __attribute__((unused))){
 void read_fn(uint32_t arg __attribute__((unused))){
   while(1){
     cli();
-    // printf("read\n");
 
     char c = getChar();
-    putChar(c);
+    rx[size] = c;
+    size++;
+    rx[size] = 0;
     
     sei();
     _delay_ms(100);
@@ -72,19 +66,19 @@ void read_fn(uint32_t arg __attribute__((unused))){
 
 
 int main(void){
-  // we need printf for debugging
-  printf_init();
+  usart_init(MYUBRR);
 
   sei();
   enableRxInterrupt();
 
   bufferInit(&inputBuffer);
   bufferInit(&outputBuffer);
-  bufferInit(&printBuffer);
 
   // LED su pin 13 (PB7) per debugging
   DDRB |= (1 << PB7);
   PORTB &= ~(1 << PB7);
+
+  size = 0;
 
   TCB_create(&p1_tcb,
              p1_stack+THREAD_STACK_SIZE-1,
@@ -100,9 +94,9 @@ int main(void){
              
   TCB_create(&p3_tcb,
              p3_stack+THREAD_STACK_SIZE-1,
-             print_fn,
+             read_fn,
              0,
-             PRINT);
+             READ);
  
   TCB_create(&p4_tcb,
              p4_stack+THREAD_STACK_SIZE-1,
@@ -112,10 +106,10 @@ int main(void){
   
   TCBList_enqueue(&reading_queue, &p1_tcb);
   TCBList_enqueue(&reading_queue, &p2_tcb);
-  TCBList_enqueue(&writing_queue, &p3_tcb);
+  TCBList_enqueue(&reading_queue, &p3_tcb);
   TCBList_enqueue(&writing_queue, &p4_tcb);
 
-  printf("starting\n");
+  usart_pstr("starting\n");
   startSchedule();
 
 }

@@ -35,7 +35,7 @@ HEADERS=uart.h\
         scheduler.h\
 		functions.h\
 
-BINS= main.elf tcb_queue_test.elf test.elf
+BINS= main.elf
 
 .phony:	clean all
 

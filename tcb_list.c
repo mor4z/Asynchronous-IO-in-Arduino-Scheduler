@@ -48,7 +48,7 @@ void TCBList_print(TCBList* list){
   printf("start-list\n");
   while(aux!=NULL){
     printf("[c: %p, p: %p, n: %p]\n ",
-           aux, aux->prev, aux->next);
+            aux, aux->prev, aux->next);
     aux=aux->next;
   }
   printf("end-list\n");

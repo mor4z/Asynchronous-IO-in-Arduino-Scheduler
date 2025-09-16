@@ -83,7 +83,6 @@ ISR(USART0_UDRE_vect) {
   } else {
     char c = bufferRead(&outputBuffer);
     UDR0 = c;
-    bufferWrite(&printBuffer, c);
   }
   PORTB &= ~(1 << PB7); // debugging
 

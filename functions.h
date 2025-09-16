@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#define BUFFER_SIZE 64
+#define BUFFER_SIZE 256
 
 typedef struct {
     char data[BUFFER_SIZE];
@@ -18,7 +18,6 @@ char bufferRead(RingBuffer* buffer);                // Lettura di un carattere d
 
 RingBuffer inputBuffer;
 RingBuffer outputBuffer;
-RingBuffer printBuffer;
 
 
 // Funzioni richieste dal professore

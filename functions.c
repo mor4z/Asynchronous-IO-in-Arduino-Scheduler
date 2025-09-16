@@ -25,7 +25,8 @@ void bufferInit(RingBuffer* buffer) {
     // printf("[bufferInit] Buffer creato con successo\n");
 } 
 
-// Stampo i campi di un buffer
+// Stampo i campi di un buffer 
+/*
 void bufferInfo(RingBuffer* buffer) {
     if (buffer == NULL) {
         // printf("[bufferInfo -> Errore!]Buffer NULL\n");
@@ -33,14 +34,14 @@ void bufferInfo(RingBuffer* buffer) {
     }
 
     // Stampa del contenuto di data
-    // printf("[buffer -> data]");
-    // for (int k = 0; k < BUFFER_SIZE; k++)
-    //    printf("%c", buffer -> data[k]);
-    //printf("\n");
+    printf("[buffer -> data]");
+    for (int k = 0; k < BUFFER_SIZE; k++)
+        printf("%c", buffer -> data[k]);
+    printf("\n");
 
     // Stampa degli altri campi
-    // printf("[buffer -> head] %u \n[buffer -> tail] %u \n[buffer -> size] %u \n", buffer -> head, buffer -> tail, buffer -> size);
-}
+    printf("[buffer -> head] %u \n[buffer -> tail] %u \n[buffer -> size] %u \n", buffer -> head, buffer -> tail, buffer -> size);
+} */
 
 // Scrittura di un carattere su un buffer
 void bufferWrite(RingBuffer* buffer, char c) {

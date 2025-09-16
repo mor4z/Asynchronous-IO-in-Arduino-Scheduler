@@ -19,12 +19,11 @@ char bufferRead(RingBuffer* buffer);                // Lettura di un carattere d
 RingBuffer inputBuffer;
 RingBuffer outputBuffer;
 
-
 // Funzioni richieste dal professore
 char getChar(void);
 void putChar(char c);
 
-// Funzioni che notificano che i buffer non sono vuoti
+// Funzioni che mettono in esecuzione i task dalle code di attesa
 uint8_t checkInput(void);
 uint8_t checkOutput(void);
 

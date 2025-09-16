@@ -1,9 +1,6 @@
 #include "uart.h"
 #include <avr/io.h>
-#include <avr/interrupt.h>
 #include <stdio.h>
-#include <stdbool.h>
-
 
 void usart_init( int ubrr) {
     // Set baud rate

@@ -79,6 +79,8 @@ int main(void){
   PORTB &= ~(1 << PB7);
 
   size = 0;
+  memset(tx, 0, BUFFER_SIZE);
+  memset(rx, 0, BUFFER_SIZE);
 
   TCB_create(&p1_tcb,
              p1_stack+THREAD_STACK_SIZE-1,
@@ -111,5 +113,4 @@ int main(void){
 
   usart_pstr("starting\n");
   startSchedule();
-
 }

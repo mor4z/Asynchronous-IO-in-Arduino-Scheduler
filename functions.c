@@ -121,7 +121,7 @@ void printString(char* s){
 }
 
 
-/* ***********Funzioni per le notifiche ai buffer ********** */
+/* ***********Funzioni per scegliere i prossimi task in esecuzione ********** */
 // Se c'è almeno un carattere nel buffer di input e c'è almeno un task nella coda di attesa di lettura, metto in esecuzione il primo task della coda di lettura e ritorno 1, altrimenti 0
 uint8_t checkInput(void) {
     if (inputBuffer.size > 0 && reading_queue.size > 0) {

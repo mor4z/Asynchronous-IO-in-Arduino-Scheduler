@@ -16,11 +16,11 @@ AVRDUDE_FLAGS += -D -q -V -C /etc/avrdude.conf
 
 # Oggetti del progetto
 OBJS = uart.o \
-       ringbuffer.o
+       functions.o
 
 # Header del progetto (solo per dipendenze, non vengono compilati)
 HEADERS = uart.h \
-          ringbuffer.h
+          functions.h
 
 # Binari da generare
 BINS = main.elf

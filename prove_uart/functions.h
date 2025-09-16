@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#define BUFFER_SIZE 64
+#define BUFFER_SIZE 256
 
 typedef struct {
     char data[BUFFER_SIZE];
@@ -12,13 +12,20 @@ typedef struct {
 
 
 void bufferInit(RingBuffer* buffer);                // Inizializzazione del buffer
-void bufferInfo(RingBuffer* buffer);                // Stampa i campi del buffer (per debugging)
+// void bufferInfo(RingBuffer* buffer);                // Stampa i campi del buffer (per debugging)
 void bufferWrite(RingBuffer* buffer, char c);       // Scrittura di un carattere sul buffer
 char bufferRead(RingBuffer* buffer);                // Lettura di un carattere dal buffer
 
 RingBuffer inputBuffer;
 RingBuffer outputBuffer;
 
+
 // Funzioni richieste dal professore
 char getChar(void);
 void putChar(char c);
+
+// Funzioni che notificano che i buffer non sono vuoti
+// uint8_t checkInput(void);
+// uint8_t checkOutput(void);
+
+void enableRxInterrupt(void);

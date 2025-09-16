@@ -1,12 +1,16 @@
-#include "ringbuffer.h"
+#include "functions.h"
+// #include "scheduler.h"
+
 #include <avr/interrupt.h>
 #include <avr/io.h>
 #include <util/atomic.h>
+#include <util/delay.h>
+
 
 // Inizializzo un buffer vuoto
 void bufferInit(RingBuffer* buffer) {
     if (buffer == NULL) {
-        printf("[bufferInit -> Errore] buffer == NULL\n");
+        // printf("[bufferInit -> Errore] buffer == NULL\n");
         return;
     }
 
@@ -17,34 +21,16 @@ void bufferInit(RingBuffer* buffer) {
     // Metto a 0 tutti i caratteri del buffer
     for (int i = 0; i < BUFFER_SIZE; i++) {
         buffer -> data[i] = 0;
-    } 
-    
-    printf("[bufferInit] Buffer creato con successo\n");
-} 
-
-// Stampo i campi di un buffer
-void bufferInfo(RingBuffer* buffer) {
-    if (buffer == NULL) {
-        printf("[bufferInfo -> Errore!]Buffer NULL\n");
-        return;
     }
 
-    // Stampa del contenuto di data
-    printf("[buffer -> data]");
-    for (int k = 0; k < BUFFER_SIZE; k++)
-        printf("%c", buffer -> data[k]);
-    printf("\n");
+    // sprintf(tx, "Init OK\n");
+    // printString(tx);
+    // _delay_ms(10); 
+} 
 
-    // Stampa degli altri campi
-    printf("[buffer -> head] %u \n[buffer -> tail] %u \n[buffer -> size] %u \n", buffer -> head, buffer -> tail, buffer -> size);
-}
 
 // Scrittura di un carattere su un buffer
 void bufferWrite(RingBuffer* buffer, char c) {
-    if ((buffer -> head + 1) % BUFFER_SIZE == (buffer -> tail)) {
-        printf("[bufferWrite] Buffer pieno, impossibile scrivere\n");
-        return;
-    }
 
     // Aggiornamento dei campi
     buffer -> data[buffer -> head] = c;
@@ -55,10 +41,6 @@ void bufferWrite(RingBuffer* buffer, char c) {
 
 // Lettura di un carattere da un buffer
 char bufferRead(RingBuffer* buffer) {
-    if (buffer -> head == buffer -> tail) {
-        printf("[bufferRead] Buffer vuoto, impossibile leggere\n");
-        return -1;
-    }
 
     // Aggiornamento dei campi
     char c = buffer -> data[buffer -> tail];
@@ -69,10 +51,21 @@ char bufferRead(RingBuffer* buffer) {
     return c;
 } 
 
+// Funzione per attivare interrupt in ricezione della seriale
+void enableRxInterrupt(void) {   
+    UCSR0B |= (1<<RXCIE0);
+}
 
-// Funzioni richieste dal professore
-char getChar() {
-    while(inputBuffer.size == 0);   // Attendo un carattere
+
+/* ***********Funzioni richieste dal professore ********** 
+char getChar(), that reads, if available a character from the input buffer. If the buffer is empty the "thread" asking for the character is put in a waiting queue. When a character becomes available the thread is brought back in running, and the character is returned (and consumed from the buffer)
+
+void putChar(char), that writes (if there is enough space) a character on the output buffer. If the buffer is full, the thread is put in waiting, and resumed whenever there is enough room in the buffer.
+*/
+
+char getChar(void) {
+    if (inputBuffer.size == 0)
+        return 0;
     char c;
     ATOMIC_BLOCK(ATOMIC_FORCEON) {
         c = bufferRead(&inputBuffer);
@@ -81,8 +74,11 @@ char getChar() {
 }
 
 void putChar(char c) {
+    while(outputBuffer.size >= BUFFER_SIZE);
     ATOMIC_BLOCK(ATOMIC_FORCEON) {
         bufferWrite(&outputBuffer, c);
     }
-    UCSR0B |= _BV(UDRIE0); // Attiva interrupt di trasmissione
+    UCSR0B |= _BV(UDRIE0); // Abilito interrupt di trasmissione
 }
+
+

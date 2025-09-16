@@ -23,6 +23,8 @@ RingBuffer outputBuffer;
 char getChar(void);
 void putChar(char c);
 
+void printString(char* s);
+
 // Funzioni che mettono in esecuzione i task dalle code di attesa
 uint8_t checkInput(void);
 uint8_t checkOutput(void);

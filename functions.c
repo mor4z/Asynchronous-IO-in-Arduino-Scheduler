@@ -113,7 +113,7 @@ void putChar(char c) {
     return;
 }
 
-void printString(char* s){
+void printString(char* s) {
     int l=strlen(s);
     for(int i=0; i<l; ++i, ++s) {
         putChar(*s);

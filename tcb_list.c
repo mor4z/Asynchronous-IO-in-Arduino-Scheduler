@@ -33,11 +33,13 @@ uint8_t TCBList_enqueue(TCBList* list, TCB* tcb){
     list->last=tcb;
     tcb->prev=tcb;
     tcb->next=NULL;
+    tcb -> status = Waiting;
   } else {
     list->last->next=tcb;
     tcb->prev=list->last;
     tcb->next=NULL;
     list->last=tcb;
+    tcb -> status = Waiting;
   }
   ++list->size;
   return OK;

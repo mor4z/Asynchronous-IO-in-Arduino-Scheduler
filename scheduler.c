@@ -56,10 +56,9 @@ void schedule(void) {
 
 
 // ISR per la ricezione da seriale
-ISR(USART0_RX_vect) {
-  cli();
+ISR(USART_RX_vect) {
 
-  PORTB |= _BV(PB7); // debugging
+  PORTB |= _BV(PB5); // debugging
 
   // Scrittura del carattere ricevuto nel buffer
   char c = UDR0;
@@ -69,14 +68,11 @@ ISR(USART0_RX_vect) {
 
   bufferWrite(&inputBuffer, c);
 
-  sei();
   schedule();
 }
 
 // ISR per la trasmissione da seriale
-ISR(USART0_UDRE_vect) {
-  cli();
-
+ISR(USART_UDRE_vect) {
   // Se non c'è nulla nel buffer di scrittura, abilito gli interrupt di trasmissione, sennò mando un carattere dal buffer
   if (outputBuffer.size == 0) {
     UCSR0B &= ~_BV(UDRIE0);
@@ -84,8 +80,7 @@ ISR(USART0_UDRE_vect) {
     char c = bufferRead(&outputBuffer);
     UDR0 = c;
   }
-  PORTB &= ~(1 << PB7); // debugging
+  PORTB &= ~(1 << PB5); // debugging
 
-  sei();
   schedule();
 }

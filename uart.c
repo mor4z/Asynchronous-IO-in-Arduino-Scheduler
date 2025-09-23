@@ -18,13 +18,6 @@ void usart_putchar(char data) {
     UDR0 = data; 
 }
 
-char usart_getchar(void) {
-    // Wait for incoming data
-    while ( !(UCSR0A & (_BV(RXC0))) );
-    // Return the data
-    return UDR0;
-}
-
 void usart_pstr(char *s) {
     // loop through entire string
     while (*s) { 
@@ -32,4 +25,3 @@ void usart_pstr(char *s) {
         s++;
     }
 }
- 

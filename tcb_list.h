@@ -18,5 +18,3 @@ TCB* TCBList_dequeue(TCBList* list);
 // adds new detached tcb to the list
 uint8_t TCBList_enqueue(TCBList* list, TCB* tcb);
 
-// for debug only
-void TCBList_print(TCBList* list);

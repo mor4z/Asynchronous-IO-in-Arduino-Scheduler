@@ -18,3 +18,7 @@ oppure (guarda dentro uart.h il baudrate)
 
 comando per la lettura ./serial/serial_linux /dev/ttyACM0 57600 1
 comando per la scrittura ./serial/serial_linux /dev/ttyACM0 57600 0
+
+per arduino Nano 115200
+comando per la lettura ./serial/serial_linux /dev/ttyUSB0 115200 1
+comando per la scrittura ./serial/serial_linux /dev/ttyUSB0 115200 0

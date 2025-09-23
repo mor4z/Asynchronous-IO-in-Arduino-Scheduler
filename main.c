@@ -68,14 +68,14 @@ int main(void){
   usart_init(MYUBRR);
 
   sei();
-  enableRxInterrupt();
+  UCSR0B |= (1<<RXCIE0);  // Attivazione interrupt ricezione
 
   bufferInit(&inputBuffer);
   bufferInit(&outputBuffer);
 
-  // LED su pin 13 (PB7) per debugging
-  DDRB |= (1 << PB7);
-  PORTB &= ~(1 << PB7);
+  // LED (PB5) per debugging
+  DDRB |= (1 << PB5);
+  PORTB &= ~(1 << PB5);
 
   size = 0;
   memset(tx, 0, BUFFER_SIZE);
@@ -110,6 +110,7 @@ int main(void){
   TCBList_enqueue(&reading_queue, &p3_tcb);
   TCBList_enqueue(&writing_queue, &p4_tcb);
 
-  usart_pstr("starting\n");
+
+  usart_pstr("Starting \n");
   startSchedule();
 }

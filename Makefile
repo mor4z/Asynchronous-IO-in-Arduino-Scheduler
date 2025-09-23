@@ -1,60 +1,52 @@
-# set this to false to disable sonars in firmware
+# Compiler settings
 CC=avr-gcc
 AS=avr-gcc
 INCLUDE_DIRS=-I.
-CC_OPTS=-Wall --std=gnu99 -DF_CPU=16000000UL -O3 -funsigned-char -funsigned-bitfields  -fshort-enums -Wall -Wstrict-prototypes -mmcu=atmega2560 $(INCLUDE_DIRS)  -D__AVR_3_BYTE_PC__
+CC_OPTS=-Wall --std=gnu99 -DF_CPU=16000000UL -Os -funsigned-char -funsigned-bitfields -fshort-enums -Wall -Wstrict-prototypes -mmcu=atmega328p $(INCLUDE_DIRS)
 AS_OPTS=-x assembler-with-cpp $(CC_OPTS)
 
+# Avrdude settings
 AVRDUDE=avrdude
+AVRDUDE_PORT=/dev/ttyUSB0   # cambia in /dev/ttyACM0 se serve
+AVRDUDE_FLAGS=-p m328p -P $(AVRDUDE_PORT) -c arduino -b 115200
+AVRDUDE_FLAGS+=-D -q -V -C /etc/avrdude.conf
 
-# com1 = serial port. Use lpt1 to connect to parallel port.
-AVRDUDE_PORT = /dev/ttyACM0    # programmer connected to serial device
-
-AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET):i
-AVRDUDE_FLAGS = -p m2560 -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER) -b 115200
-AVRDUDE_FLAGS += $(AVRDUDE_NO_VERIFY)
-AVRDUDE_FLAGS += $(AVRDUDE_VERBOSE)
-AVRDUDE_FLAGS += $(AVRDUDE_ERASE_COUNTER)
-AVRDUDE_FLAGS += -D -q -V -C /etc/avrdude.conf
-AVRDUDE_FLAGS += -c wiring
-
-
+# Objects and headers
 OBJS=uart.o\
      tcb.o\
      tcb_list.o\
      atomport_asm.o\
      timer.o\
      scheduler.o\
-	 functions.o\
+     functions.o\
 
 HEADERS=uart.h\
-        tcb.h.h\
-		tcb_list.h\
-		atomport_asm.h\
-		timer.h\
+        tcb.h\
+        tcb_list.h\
+        atomport_asm.h\
+        timer.h\
         scheduler.h\
-		functions.h\
+        functions.h\
 
-BINS= main.elf
+BINS=main.elf
 
-.phony:	clean all
+.PHONY: clean all
 
-all:	$(BINS) 
+all: $(BINS)
 
-#common objects
-%.o:	%.c 
-	$(CC) $(CC_OPTS) -c  $<
+# Common objects
+%.o: %.c
+	$(CC) $(CC_OPTS) -c $<
 
-%.o:	%.s 
-	$(AS) $(AS_OPTS) -c  $<
+%.o: %.s
+	$(AS) $(AS_OPTS) -c $<
 
-%.elf:	%.o $(OBJS)
+%.elf: %.o $(OBJS)
 	$(CC) $(CC_OPTS) -o $@ $< $(OBJS) $(LIBS)
 
-
-%.hex:	%.elf
+%.hex: %.elf
 	avr-objcopy -O ihex -R .eeprom $< $@
-	$(AVRDUDE) $(AVRDUDE_FLAGS) -U flash:w:$@:i #$(AVRDUDE_WRITE_EEPROM) 
+	$(AVRDUDE) $(AVRDUDE_FLAGS) -U flash:w:$@:i
 
-clean:	
+clean:
 	rm -rf $(OBJS) $(BINS) *.hex *~ *.o

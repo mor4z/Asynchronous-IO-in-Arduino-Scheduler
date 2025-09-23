@@ -13,7 +13,6 @@
 #include "scheduler.h"
 #include "functions.h"
 #define THREAD_STACK_SIZE 256
-#define IDLE_STACK_SIZE 128
 
 char tx[BUFFER_SIZE];
 char rx[BUFFER_SIZE];

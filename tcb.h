@@ -16,7 +16,7 @@ typedef struct TCB {
   Pointer sp_save_ptr;          /* Where I save the stack pointer before the Context Switch*/
   
   ThreadFn thread_fn;           /* Function of the thread */
-  uint32_t thread_arg;          /* Argument to be passed to the thread function until it starts*/
+  uint8_t thread_arg;          /* Argument to be passed to the thread function until it starts*/
   TaskType type;                /* Aggiunta per distringuere i task di stampa da quelli di lettura*/
 
   struct TCB* next;
